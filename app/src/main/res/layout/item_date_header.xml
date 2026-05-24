@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="6dp"
+    android:gravity="center_vertical">
+
+    <!-- Left accent line -->
+    <View
+        android:layout_width="3dp"
+        android:layout_height="14dp"
+        android:background="@color/accent"
+        android:layout_marginEnd="10dp" />
+
+    <!-- Date label -->
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="11sp"
+        android:textColor="@color/text_secondary"
+        android:fontFamily="@font/poppins_semibold"
+        android:letterSpacing="0.1"
+        android:textAllCaps="true" />
+
+    <!-- Right divider line -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:background="@color/border" />
+
+</LinearLayout>

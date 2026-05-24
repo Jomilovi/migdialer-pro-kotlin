@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dialerFragment">
+
+    <fragment
+        android:id="@+id/dialerFragment"
+        android:name="com.migdialer.pro.ui.dialer.DialerFragment"
+        android:label="@string/tab_dialer">
+        <argument
+            android:name="prefill_number"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/recentsFragment"
+        android:name="com.migdialer.pro.ui.recents.RecentsFragment"
+        android:label="@string/tab_recents" />
+
+    <fragment
+        android:id="@+id/contactsFragment"
+        android:name="com.migdialer.pro.ui.contacts.ContactsFragment"
+        android:label="@string/tab_contacts" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.migdialer.pro.ui.settings.SettingsFragment"
+        android:label="@string/tab_settings" />
+
+</navigation>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="10dp"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground">
+
+    <!-- Avatar with initial overlay -->
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="12dp">
+
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/bg_avatar" />
+
+        <TextView
+            android:id="@+id/tv_initial"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/poppins_semibold" />
+    </FrameLayout>
+
+    <!-- Call info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Name row -->
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/poppins_semibold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <!-- Meta: time · duration · SIM name -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="2dp">
+
+            <!-- Arrow icon -->
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_call_incoming" />
+
+            <TextView
+                android:id="@+id/tv_meta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="11sp"
+                android:textColor="@color/text_tertiary"
+                android:fontFamily="@font/mono"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+        </LinearLayout>
+
+        <!-- SIM badge pill -->
+        <TextView
+            android:id="@+id/tv_sim_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textSize="9sp"
+            android:textColor="@color/sim1"
+            android:background="@drawable/bg_sim_badge"
+            android:paddingHorizontal="7dp"
+            android:paddingVertical="2dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:letterSpacing="0.05" />
+
+    </LinearLayout>
+
+    <!-- Hidden time view (kept for binding compatibility) -->
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <!-- Call button -->
+    <ImageView
+        android:id="@+id/btn_call"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_call"
+        android:padding="8dp"
+        android:background="@drawable/bg_avatar"
+        android:layout_marginStart="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:tint="@color/text_secondary" />
+
+</LinearLayout>

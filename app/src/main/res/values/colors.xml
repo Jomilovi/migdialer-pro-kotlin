@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds -->
+    <color name="bg_primary">#FF000000</color>
+    <color name="bg_surface">#FF0D0D0D</color>
+    <color name="bg_surface2">#FF141414</color>
+    <color name="bg_surface3">#FF1C1C1C</color>
+
+    <!-- Borders -->
+    <color name="border">#FF222222</color>
+    <color name="border2">#FF2E2E2E</color>
+
+    <!-- Text -->
+    <color name="text_primary">#FFF0F0F0</color>
+    <color name="text_secondary">#FF888888</color>
+    <color name="text_tertiary">#FF444444</color>
+
+    <!-- Accent (white default — changeable in settings) -->
+    <color name="accent">#FFFFFFFF</color>
+    <color name="accent_dim">#1AFFFFFF</color>
+
+    <!-- Status colors -->
+    <color name="green">#FF34C759</color>
+    <color name="red">#FFFF3B30</color>
+    <color name="orange">#FFFF9500</color>
+    <color name="blue">#FF0A84FF</color>
+
+    <!-- SIM colors -->
+    <color name="sim1">#FF34C759</color>
+    <color name="sim2">#FF64D2FF</color>
+
+    <!-- Nav -->
+    <color name="nav_active">#FFFFFFFF</color>
+    <color name="nav_inactive">#FF444444</color>
+</resources>

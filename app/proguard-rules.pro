@@ -1,0 +1,4 @@
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep class com.migdialer.pro.** { *; }
+-dontwarn **
