@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MigDialer Pro</string>
+    <string name="tab_dialer">Marcar</string>
+    <string name="tab_recents">Historial</string>
+    <string name="tab_contacts">Contactos</string>
+    <string name="tab_settings">Ajustes</string>
+    <string name="dial">Llamar</string>
+    <string name="backspace">Borrar</string>
+    <string name="search_hint">Buscar contacto…</string>
+    <string name="empty_recents">Sin historial de llamadas</string>
+    <string name="empty_contacts">Sin contactos</string>
+    <string name="incoming_call">Llamada entrante</string>
+    <string name="accept">Contestar</string>
+    <string name="decline">Rechazar</string>
+</resources>
