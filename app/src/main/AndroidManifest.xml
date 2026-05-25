@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Phone permissions -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -9,16 +9,15 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-
-    <!-- Contacts -->
+    <uses-permission android:name="android.permission.BIND_INCALL_SERVICE"
+        tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <!-- Audio / sensor -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- No internet needed - 100% offline -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
 
     <application
         android:allowBackup="false"
@@ -29,7 +28,6 @@
         android:theme="@style/Theme.MigDialer"
         android:hardwareAccelerated="true">
 
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,7 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Register as a dialer app -->
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -64,7 +61,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Incoming call screen -->
         <activity
             android:name=".ui.dialer.IncomingCallActivity"
             android:exported="false"
@@ -72,7 +68,33 @@
             android:launchMode="singleInstance"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.MigDialer.Fullscreen" />
+
+        <activity
+            android:name=".ui.incall.InCallActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MigDialer.Fullscreen" />
+
+        <service
+            android:name=".telecom.MigDialerConnectionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:foregroundServiceType="phoneCall">
+
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
 
     </application>
 

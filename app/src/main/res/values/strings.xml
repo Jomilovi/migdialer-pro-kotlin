@@ -13,4 +13,12 @@
     <string name="incoming_call">Llamada entrante</string>
     <string name="accept">Contestar</string>
     <string name="decline">Rechazar</string>
+    <string name="hang_up">Colgar</string>
+    <string name="in_call">En llamada</string>
+    <string name="calling">Marcando…</string>
+    <string name="on_hold">En espera</string>
+    <string name="mute">Silencio</string>
+    <string name="speaker">Altavoz</string>
+    <string name="hold">Espera</string>
+    <string name="keypad">Teclado</string>
 </resources>
