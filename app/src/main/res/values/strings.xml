@@ -1,24 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App -->
     <string name="app_name">MigDialer Pro</string>
+
+    <!-- Tabs -->
     <string name="tab_dialer">Marcar</string>
     <string name="tab_recents">Historial</string>
     <string name="tab_contacts">Contactos</string>
     <string name="tab_settings">Ajustes</string>
+
+    <!-- Dialer -->
     <string name="dial">Llamar</string>
     <string name="backspace">Borrar</string>
     <string name="search_hint">Buscar contacto…</string>
+
+    <!-- Empty states -->
     <string name="empty_recents">Sin historial de llamadas</string>
     <string name="empty_contacts">Sin contactos</string>
+
+    <!-- Incoming call -->
     <string name="incoming_call">Llamada entrante</string>
     <string name="accept">Contestar</string>
     <string name="decline">Rechazar</string>
-    <string name="hang_up">Colgar</string>
-    <string name="in_call">En llamada</string>
-    <string name="calling">Marcando…</string>
-    <string name="on_hold">En espera</string>
-    <string name="mute">Silencio</string>
+
+    <!-- In-call controls -->
+    <string name="mute">Silenciar</string>
     <string name="speaker">Altavoz</string>
     <string name="hold">Espera</string>
     <string name="keypad">Teclado</string>
+    <string name="hang_up">Colgar</string>
+
+    <!-- Settings -->
+    <string name="settings_default_sim">SIM predeterminada</string>
+    <string name="settings_number_format">Formato de número</string>
+    <string name="settings_accent_color">Color de acento</string>
+    <string name="sim_ask_every_time">Preguntar siempre</string>
+    <string name="format_national">Nacional</string>
+    <string name="format_international">Internacional</string>
+    <string name="accent_white">Blanco</string>
+    <string name="accent_green">Verde</string>
+    <string name="accent_blue">Azul</string>
+    <string name="dialer_is_default">✓ MigDialer es el teléfono predeterminado</string>
+    <string name="dialer_not_default">No es el dialer predeterminado</string>
+
+    <!-- Contact detail -->
+    <string name="choose_sim">Elegir SIM</string>
+    <string name="number_copied">Número copiado</string>
+    <string name="call">Llamar</string>
+    <string name="copy_number">Copiar número</string>
+    <string name="add_to_contacts">Agregar a contactos</string>
+
+    <!-- Recents actions -->
+    <string name="recents_action_call">Llamar</string>
+    <string name="recents_action_copy">Copiar número</string>
+    <string name="recents_action_add">Agregar a contactos</string>
+
+    <!-- Dialogs -->
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
 </resources>

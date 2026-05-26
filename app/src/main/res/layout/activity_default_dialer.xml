@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/bg_primary"
+    android:paddingHorizontal="40dp">
+
+    <!-- Icono grande -->
+    <TextView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:gravity="center"
+        android:text="📞"
+        android:textSize="48sp"
+        android:background="@drawable/bg_avatar_incall"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Establecer como\nteléfono predeterminado"
+        android:textSize="24sp"
+        android:textColor="@color/text_primary"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MigDialer Pro necesita ser el dialer predeterminado para gestionar llamadas entrantes, mostrar la pantalla de llamada y registrar el historial correctamente."
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4"
+        android:layout_marginBottom="48dp" />
+
+    <!-- Botón principal -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSetDefault"
+        style="@style/MigButton.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Establecer como predeterminado"
+        android:textSize="15sp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Omitir -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSkip"
+        style="@style/MigButton.Ghost"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Ahora no"
+        android:textSize="14sp" />
+
+</LinearLayout>

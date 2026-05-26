@@ -18,6 +18,11 @@ class ContactRepository(private val context: Context) {
         filterContacts(all, query)
     }
 
+    /** Fetch a single contact by its ContactsContract ID. Used by ContactDetailFragment. */
+    suspend fun getContactById(contactId: Long): Contact? = withContext(Dispatchers.IO) {
+        loadAllContacts().firstOrNull { it.id == contactId }
+    }
+
     private fun loadAllContacts(): List<Contact> {
         val contacts = mutableMapOf<Long, MutableContact>()
 
@@ -29,7 +34,6 @@ class ContactRepository(private val context: Context) {
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.TYPE,
                 ContactsContract.CommonDataKinds.Phone.LABEL,
-                // Use HAS_PHONE_NUMBER proxy — we check photo separately
                 ContactsContract.CommonDataKinds.Phone.PHOTO_ID
             ),
             null, null,
@@ -46,11 +50,7 @@ class ContactRepository(private val context: Context) {
                 val label   = it.getString(4) ?: ""
                 val photoId = it.getLong(5)
 
-                // Build photo URI ONLY using the contact's OWN contact_id + photo_id
-                // This prevents photo bleeding between contacts
                 val photoUri: String? = if (photoId > 0L) {
-                    // Use the content URI that is strictly tied to this contact_id
-                    // Format: content://com.android.contacts/contacts/{id}/photo
                     val base = ContentUris.withAppendedId(
                         ContactsContract.Contacts.CONTENT_URI, id
                     )

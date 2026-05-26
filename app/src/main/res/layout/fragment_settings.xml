@@ -1,36 +1,315 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="⚙️"
-        android:textSize="48sp" />
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="32dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ajustes — Fase 2"
-        android:textSize="16sp"
-        android:textColor="@color/text_primary"
-        android:fontFamily="@font/poppins_semibold"
-        android:paddingTop="12dp" />
+        <!-- ── Header ─────────────────────────────────────────────────────── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ajustes"
+            android:textSize="28sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="24dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Temas, formas de tecla y personalización\nse activarán en la siguiente fase"
-        android:textSize="13sp"
-        android:textColor="@color/text_tertiary"
-        android:fontFamily="@font/mono"
-        android:gravity="center"
-        android:paddingTop="8dp"
-        android:paddingHorizontal="32dp" />
+        <!-- ── Sección: Dialer ────────────────────────────────────────────── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TELÉFONO"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/poppins_semibold"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="8dp" />
 
-</LinearLayout>
+        <!-- Default dialer banner -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/bg_surface"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dialer predeterminado"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/poppins_semibold" />
+
+            <TextView
+                android:id="@+id/tvDefaultDialerStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No es el dialer predeterminado"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/poppins_regular"
+                android:paddingTop="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetDefault"
+                style="@style/MigButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="12dp"
+                android:text="Establecer como predeterminado"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/border" />
+
+        <!-- SIM por defecto -->
+        <LinearLayout
+            android:id="@+id/rowDefaultSim"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/bg_surface"
+            android:paddingHorizontal="24dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SIM predeterminada"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/poppins_regular" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Salientes y entrantes"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="@font/poppins_regular" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvSimValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preguntar"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/poppins_regular" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dividerSim"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border" />
+
+        <!-- ── Sección: Experiencia ───────────────────────────────────────── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EXPERIENCIA"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/poppins_semibold"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Vibración -->
+        <LinearLayout
+            android:id="@+id/rowVibration"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/bg_surface"
+            android:paddingHorizontal="24dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vibración"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/poppins_regular" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Al marcar teclas"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="@font/poppins_regular" />
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchVibration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/border" />
+
+        <!-- Formato de número -->
+        <LinearLayout
+            android:id="@+id/rowFormat"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/bg_surface"
+            android:paddingHorizontal="24dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Formato de número"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/poppins_regular" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cómo se muestran los números"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="@font/poppins_regular" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvFormatValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nacional"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/poppins_regular" />
+        </LinearLayout>
+
+        <!-- ── Sección: Apariencia ────────────────────────────────────────── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="APARIENCIA"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/poppins_semibold"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Color de acento -->
+        <LinearLayout
+            android:id="@+id/rowAccent"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/bg_surface"
+            android:paddingHorizontal="24dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Color de acento"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/poppins_regular" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botones y resaltados"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="@font/poppins_regular" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/vAccentPreview"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_accent_preview" />
+
+            <TextView
+                android:id="@+id/tvAccentValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blanco"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/poppins_regular" />
+        </LinearLayout>
+
+        <!-- ── Versión ────────────────────────────────────────────────────── -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MigDialer Pro · v1.0.0"
+            android:textSize="12sp"
+            android:textColor="@color/text_tertiary"
+            android:fontFamily="@font/mono"
+            android:gravity="center"
+            android:paddingTop="40dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingBottom="24dp">
+
+    <!-- Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_sheet_handle" />
+
+    <!-- Nombre / Número -->
+    <TextView
+        android:id="@+id/tvSheetName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:fontFamily="@font/poppins_semibold"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="2dp" />
+
+    <TextView
+        android:id="@+id/tvSheetNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:fontFamily="@font/mono"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="20dp" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Llamar -->
+    <LinearLayout
+        android:id="@+id/rowCall"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_call"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recents_action_call"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/poppins_regular" />
+    </LinearLayout>
+
+    <!-- Copiar número -->
+    <LinearLayout
+        android:id="@+id/rowCopy"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_copy"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recents_action_copy"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/poppins_regular" />
+    </LinearLayout>
+
+    <!-- Agregar a contactos -->
+    <LinearLayout
+        android:id="@+id/rowAddContact"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_contacts"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recents_action_add"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/poppins_regular" />
+    </LinearLayout>
+
+</LinearLayout>

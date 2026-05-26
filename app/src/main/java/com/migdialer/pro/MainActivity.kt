@@ -4,18 +4,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.telecom.TelecomManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.migdialer.pro.data.repository.SettingsRepository
 import com.migdialer.pro.databinding.ActivityMainBinding
+import com.migdialer.pro.ui.onboarding.DefaultDialerActivity
 import com.migdialer.pro.utils.PermissionUtils
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var settingsRepo: SettingsRepository
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -26,16 +30,36 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        settingsRepo = SettingsRepository(applicationContext)
+
         setupEdgeToEdge()
         setupNavigation()
         requestPermissionsIfNeeded()
         handleDialIntent(intent)
+
+        // Show onboarding only once if not default dialer
+        if (savedInstanceState == null) checkDefaultDialer()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleDialIntent(intent)
     }
+
+    // ── Default dialer onboarding ──────────────────────────────────────────
+
+    private fun checkDefaultDialer() {
+        if (settingsRepo.onboardingShown) return
+        val telecom = getSystemService(TelecomManager::class.java)
+        val isDefault = telecom?.defaultDialerPackage == packageName
+        if (!isDefault) {
+            startActivity(Intent(this, DefaultDialerActivity::class.java))
+        } else {
+            settingsRepo.onboardingShown = true
+        }
+    }
+
+    // ── Edge to edge ──────────────────────────────────────────────────────
 
     private fun setupEdgeToEdge() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -47,6 +71,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // ── Navigation ────────────────────────────────────────────────────────
+
     private fun setupNavigation() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -54,16 +80,19 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNav.setupWithNavController(navController)
     }
 
+    // ── Permissions ───────────────────────────────────────────────────────
+
     private fun requestPermissionsIfNeeded() {
         val missing = PermissionUtils.missing(this)
         if (missing.isNotEmpty()) permissionLauncher.launch(missing)
     }
 
+    // ── tel: intent ───────────────────────────────────────────────────────
+
     private fun handleDialIntent(intent: Intent?) {
         val data: Uri = intent?.data ?: return
         if (data.scheme == "tel") {
             val number = data.schemeSpecificPart?.replace(Regex("[^0-9+*#]"), "") ?: return
-            // Pass to DialerFragment via navigation arguments
             val navHost = supportFragmentManager
                 .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
             navHost?.navController?.navigate(

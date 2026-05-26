@@ -25,7 +25,8 @@ sealed class CallListItem {
 }
 
 class RecentsAdapter(
-    private val onCall: (String) -> Unit
+    private val onCall: (String) -> Unit,
+    private val onItemLongClick: ((com.migdialer.pro.data.model.CallEntry) -> Unit)? = null
 ) : ListAdapter<CallListItem, RecyclerView.ViewHolder>(DIFF) {
 
     companion object {
@@ -137,6 +138,7 @@ class RecentsAdapter(
             loadAvatar(call.photoUri, call.initial, ivAvatar, tvInitial)
             btnCall.setOnClickListener { onCall(call.number) }
             root.setOnClickListener   { onCall(call.number) }
+            root.setOnLongClickListener { onItemLongClick?.invoke(call); true }
         }
     }
 }

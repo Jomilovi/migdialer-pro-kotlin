@@ -12,7 +12,8 @@ import com.migdialer.pro.databinding.ItemContactBinding
 import com.migdialer.pro.ui.recents.RecentsAdapter
 
 class ContactsAdapter(
-    private val onCall: (String) -> Unit
+    private val onCall: (String) -> Unit,
+    private val onContactClick: (Contact) -> Unit = {}
 ) : ListAdapter<Contact, ContactsAdapter.VH>(DIFF) {
 
     inner class VH(val b: ItemContactBinding) : RecyclerView.ViewHolder(b.root)
@@ -32,8 +33,13 @@ class ContactsAdapter(
             tvName.text   = contact.name
             tvNumber.text = contact.phoneNumbers.firstOrNull()?.number ?: ""
             RecentsAdapter.loadAvatar(contact.photoUri, contact.initial, ivAvatar, tvInitial)
-            btnCall.setOnClickListener { contact.phoneNumbers.firstOrNull()?.number?.let { onCall(it) } }
-            root.setOnClickListener   { contact.phoneNumbers.firstOrNull()?.number?.let { onCall(it) } }
+
+            // Botón de llamada directa
+            btnCall.setOnClickListener {
+                contact.phoneNumbers.firstOrNull()?.number?.let { onCall(it) }
+            }
+            // Tocar la fila → detalle del contacto
+            root.setOnClickListener { onContactClick(contact) }
         }
     }
 

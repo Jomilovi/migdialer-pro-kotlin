@@ -23,7 +23,24 @@
     <fragment
         android:id="@+id/contactsFragment"
         android:name="com.migdialer.pro.ui.contacts.ContactsFragment"
-        android:label="@string/tab_contacts" />
+        android:label="@string/tab_contacts">
+        <action
+            android:id="@+id/action_contacts_to_detail"
+            app:destination="@id/contactDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/contactDetailFragment"
+        android:name="com.migdialer.pro.ui.contacts.ContactDetailFragment"
+        android:label="Contacto">
+        <argument
+            android:name="contact_id"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
