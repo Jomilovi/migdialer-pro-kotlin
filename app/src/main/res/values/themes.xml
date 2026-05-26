@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ── Tema base ──────────────────────────────────────────────────────── -->
+    <!-- Tema base -->
     <style name="Theme.MigDialer" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/accent</item>
         <item name="colorOnPrimary">@color/bg_primary</item>
@@ -12,17 +12,16 @@
         <item name="android:navigationBarColor">@color/bg_surface</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
-        <!-- Switch track/thumb -->
         <item name="colorControlActivated">@color/accent</item>
     </style>
 
-    <!-- ── Fullscreen para IncomingCallActivity ───────────────────────────── -->
+    <!-- Fullscreen para IncomingCallActivity -->
     <style name="Theme.MigDialer.Fullscreen" parent="Theme.MigDialer">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
-    <!-- ── Teclado DTMF ───────────────────────────────────────────────────── -->
+    <!-- Teclado DTMF -->
     <style name="KeyStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">72dp</item>
@@ -31,7 +30,7 @@
         <item name="android:layout_margin">5dp</item>
     </style>
 
-    <!-- ── Botones ────────────────────────────────────────────────────────── -->
+    <!-- Botones -->
     <style name="MigButton.Primary" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/accent</item>
         <item name="android:textColor">@color/bg_primary</item>
@@ -57,7 +56,7 @@
         <item name="android:insetBottom">0dp</item>
     </style>
 
-    <!-- ── AlertDialog AMOLED ────────────────────────────────────────────── -->
+    <!-- AlertDialog AMOLED -->
     <style name="MigDialerAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:background">@color/bg_surface2</item>
         <item name="android:textColor">@color/text_primary</item>
@@ -65,8 +64,7 @@
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
 
-
-    <!-- ── Bottom Sheet AMOLED ───────────────────────────────────────────── -->
+    <!-- Bottom Sheet AMOLED -->
     <style name="MigBottomSheet" parent="Theme.Material3.Light.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="bottomSheetStyle">@style/MigBottomSheetStyle</item>
@@ -78,16 +76,3 @@
     </style>
 
 </resources>
-<!-- Append before closing 
-    <!-- ── Bottom Sheet AMOLED ───────────────────────────────────────────── -->
-    <style name="MigBottomSheet" parent="Theme.Material3.Light.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="bottomSheetStyle">@style/MigBottomSheetStyle</item>
-    </style>
-
-    <style name="MigBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="backgroundTint">@color/bg_surface2</item>
-        <item name="android:elevation">8dp</item>
-    </style>
-
-</resources> -->
