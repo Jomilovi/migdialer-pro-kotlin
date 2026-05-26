@@ -63,6 +63,9 @@ dependencies {
     // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
+    // CoordinatorLayout — requerido por fragment_contact_detail (CollapsingToolbar + FAB)
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
