@@ -10,13 +10,15 @@ class MigInCallService : InCallService() {
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
         currentCall = call
-
-        // Notificar al callback si InCallActivity ya está esperando
-        onCallReady?.invoke(call)
+        call.registerCallback(callStateCallback)
 
         // Lanzar pantalla de llamada activa
         val intent = Intent(this, InCallActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
+            )
             putExtra(InCallActivity.EXTRA_DISPLAY_NAME, getDisplayName(call))
         }
         startActivity(intent)
@@ -24,9 +26,14 @@ class MigInCallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
-        if (currentCall == call) {
-            currentCall = null
-            onCallReady = null
+        call.unregisterCallback(callStateCallback)
+        if (currentCall == call) currentCall = null
+    }
+
+    private val callStateCallback = object : Call.Callback() {
+        override fun onStateChanged(call: Call, state: Int) {
+            // Notificar a la Activity si está activa
+            stateListener?.invoke(state)
         }
     }
 
@@ -38,7 +45,10 @@ class MigInCallService : InCallService() {
     }
 
     companion object {
-        var currentCall: Call? = null
-        var onCallReady: ((Call) -> Unit)? = null
+        // La llamada activa actual — accesible desde InCallActivity
+        @Volatile var currentCall: Call? = null
+
+        // Listener de estado — InCallActivity lo asigna al crearse
+        var stateListener: ((Int) -> Unit)? = null
     }
 }

@@ -1,6 +1,7 @@
 package com.migdialer.pro.ui.dialer
 
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +23,7 @@ class InCallActivity : AppCompatActivity() {
     private var secondsElapsed = 0
 
     private val handler = Handler(Looper.getMainLooper())
+
     private val timerRunnable = object : Runnable {
         override fun run() {
             secondsElapsed++
@@ -32,20 +34,18 @@ class InCallActivity : AppCompatActivity() {
         }
     }
 
-    private val callCallback = object : Call.Callback() {
-        override fun onStateChanged(call: Call, state: Int) {
-            runOnUiThread { handleCallState(state) }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Mostrar sobre pantalla de bloqueo y mantener encendido
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         )
 
         binding = ActivityInCallBinding.inflate(layoutInflater)
@@ -53,12 +53,20 @@ class InCallActivity : AppCompatActivity() {
 
         audioManager = getSystemService(AudioManager::class.java)
 
+        // Nombre o número del caller
         val name = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: ""
         binding.tvCallerName.text = name.ifBlank { getString(R.string.unknown_caller) }
         binding.tvCallStatus.text = getString(R.string.call_dialing)
 
         setupButtons()
-        attachToCall()
+
+        // Registrar listener de estado en el servicio
+        MigInCallService.stateListener = { state -> runOnUiThread { handleCallState(state) } }
+
+        // Sincronizar estado actual si la llamada ya existe
+        MigInCallService.currentCall?.let { call ->
+            handleCallState(call.state)
+        }
     }
 
     private fun setupButtons() {
@@ -69,33 +77,21 @@ class InCallActivity : AppCompatActivity() {
                 if (isMuted) R.drawable.ic_mute_off else R.drawable.ic_mute
             )
             binding.icMute.alpha = if (isMuted) 1f else 0.5f
-            binding.tvMuteLabel.text = if (isMuted) "Activado" else "Silenciar"
+            binding.tvMuteLabel.text = if (isMuted)
+                getString(R.string.mute_on) else getString(R.string.mute_off)
         }
 
         binding.btnSpeaker.setOnClickListener {
             isSpeaker = !isSpeaker
             audioManager.isSpeakerphoneOn = isSpeaker
             binding.icSpeaker.alpha = if (isSpeaker) 1f else 0.5f
-            binding.tvSpeakerLabel.text = if (isSpeaker) "Activado" else "Altavoz"
+            binding.tvSpeakerLabel.text = if (isSpeaker)
+                getString(R.string.speaker_on) else getString(R.string.speaker_off)
         }
 
         binding.btnEndCall.setOnClickListener {
             MigInCallService.currentCall?.disconnect()
-        }
-    }
-
-    private fun attachToCall() {
-        val call = MigInCallService.currentCall
-        if (call != null) {
-            call.registerCallback(callCallback)
-            handleCallState(call.state)
-        } else {
-            MigInCallService.onCallReady = { call ->
-                runOnUiThread {
-                    call.registerCallback(callCallback)
-                    handleCallState(call.state)
-                }
-            }
+            finish()
         }
     }
 
@@ -116,6 +112,7 @@ class InCallActivity : AppCompatActivity() {
                 }
             }
             Call.STATE_HOLDING -> {
+                handler.removeCallbacks(timerRunnable)
                 binding.tvCallStatus.text = getString(R.string.call_on_hold)
             }
             Call.STATE_DISCONNECTING,
@@ -129,15 +126,15 @@ class InCallActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(timerRunnable)
-        MigInCallService.currentCall?.unregisterCallback(callCallback)
-        MigInCallService.onCallReady = null
-        // Restaurar audio
+        MigInCallService.stateListener = null
+        // Restaurar audio al estado normal
         audioManager.isMicrophoneMute = false
         audioManager.isSpeakerphoneOn = false
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        // No permitir salir con back mientras hay llamada activa
+        // No salir con botón atrás durante llamada activa
     }
 
     companion object {

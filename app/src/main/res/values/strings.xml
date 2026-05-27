@@ -17,4 +17,8 @@
     <string name="call_ringing">Llamando…</string>
     <string name="call_on_hold">En espera</string>
     <string name="unknown_caller">Número desconocido</string>
+    <string name="mute_on">Activado</string>
+    <string name="mute_off">Silenciar</string>
+    <string name="speaker_on">Activado</string>
+    <string name="speaker_off">Altavoz</string>
 </resources>
