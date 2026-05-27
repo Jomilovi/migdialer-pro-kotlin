@@ -2,16 +2,18 @@ package com.migdialer.pro.ui.dialer
 
 import android.media.AudioManager
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.telecom.Call
+import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.migdialer.pro.MigInCallService
 import com.migdialer.pro.R
 import com.migdialer.pro.databinding.ActivityIncomingCallBinding
@@ -26,6 +28,20 @@ class IncomingCallActivity : AppCompatActivity() {
         override fun onStateChanged(call: Call, state: Int) {
             runOnUiThread {
                 when (state) {
+                    Call.STATE_ACTIVE -> {
+                        // Contestada desde otro lugar (auriculares, etc.)
+                        stopRingtone()
+                        val name = intent.getStringExtra(MigInCallService.EXTRA_DISPLAY_NAME) ?: ""
+                        val photo = intent.getStringExtra(MigInCallService.EXTRA_PHOTO_URI)
+                        startActivity(
+                            android.content.Intent(this@IncomingCallActivity, InCallActivity::class.java).apply {
+                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                putExtra(MigInCallService.EXTRA_DISPLAY_NAME, name)
+                                putExtra(MigInCallService.EXTRA_PHOTO_URI, photo)
+                            }
+                        )
+                        finish()
+                    }
                     Call.STATE_DISCONNECTED,
                     Call.STATE_DISCONNECTING -> {
                         stopRingtone()
@@ -53,27 +69,46 @@ class IncomingCallActivity : AppCompatActivity() {
         binding = ActivityIncomingCallBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val name = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: ""
-        binding.tvCallerName.text = name.ifBlank { getString(R.string.unknown_caller) }
-        binding.tvCallStatus.text = getString(R.string.incoming_call)
+        val name     = intent.getStringExtra(MigInCallService.EXTRA_DISPLAY_NAME) ?: ""
+        val photoUri = intent.getStringExtra(MigInCallService.EXTRA_PHOTO_URI)
 
-        // Registrar callback para detectar si la llamada se cancela sola
+        binding.tvCallerName.text  = name.ifBlank { getString(R.string.unknown_caller) }
+        binding.tvCallStatus.text  = getString(R.string.incoming_call)
+
+        val initial = name.firstOrNull()?.uppercase() ?: "#"
+        loadAvatar(photoUri, initial)
+
         MigInCallService.currentCall?.registerCallback(callCallback)
 
         setupButtons()
         startRingtone()
     }
 
+    private fun loadAvatar(photoUri: String?, initial: String) {
+        binding.tvAvatarInitial.text = initial
+        if (!photoUri.isNullOrBlank()) {
+            binding.ivAvatar.load(Uri.parse(photoUri)) {
+                transformations(CircleCropTransformation())
+                crossfade(false)
+                listener(
+                    onSuccess = { _, _ -> binding.tvAvatarInitial.visibility = View.GONE },
+                    onError   = { _, _ -> binding.tvAvatarInitial.visibility = View.VISIBLE }
+                )
+            }
+        }
+    }
+
     private fun setupButtons() {
         binding.btnAccept.setOnClickListener {
             stopRingtone()
             MigInCallService.currentCall?.answer(0)
-            // Abrir pantalla de llamada activa
-            val name = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: ""
+            val name     = intent.getStringExtra(MigInCallService.EXTRA_DISPLAY_NAME) ?: ""
+            val photoUri = intent.getStringExtra(MigInCallService.EXTRA_PHOTO_URI)
             startActivity(
                 android.content.Intent(this, InCallActivity::class.java).apply {
-                    putExtra(InCallActivity.EXTRA_DISPLAY_NAME, name)
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra(MigInCallService.EXTRA_DISPLAY_NAME, name)
+                    putExtra(MigInCallService.EXTRA_PHOTO_URI, photoUri)
                 }
             )
             finish()
@@ -91,9 +126,8 @@ class IncomingCallActivity : AppCompatActivity() {
             val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
             ringtone = RingtoneManager.getRingtone(this, uri)
             ringtone?.play()
-        } catch (e: Exception) { /* Sin ringtone no es crítico */ }
+        } catch (e: Exception) { }
 
-        // Vibrar en patrón de llamada
         try {
             vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 (getSystemService(VibratorManager::class.java))?.defaultVibrator
@@ -101,9 +135,8 @@ class IncomingCallActivity : AppCompatActivity() {
                 @Suppress("DEPRECATION")
                 getSystemService(Vibrator::class.java)
             }
-            val pattern = longArrayOf(0, 1000, 1000)
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        } catch (e: Exception) { /* Sin vibración no es crítico */ }
+            vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 1000, 1000), 0))
+        } catch (e: Exception) { }
     }
 
     private fun stopRingtone() {
@@ -117,7 +150,6 @@ class IncomingCallActivity : AppCompatActivity() {
         MigInCallService.currentCall?.unregisterCallback(callCallback)
     }
 
-    companion object {
-        const val EXTRA_DISPLAY_NAME = "display_name"
-    }
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() { /* No salir durante llamada entrante */ }
 }
