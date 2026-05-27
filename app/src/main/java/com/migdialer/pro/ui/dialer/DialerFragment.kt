@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.telecom.TelecomManager
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -146,11 +147,27 @@ class DialerFragment : Fragment(), SensorEventListener {
         }
     }
 
+    /**
+     * Realiza la llamada directamente vía TelecomManager si somos el dialer predeterminado.
+     * Si el usuario aún no nos dio el rol, usa ACTION_CALL como respaldo.
+     */
     private fun placeCall(number: String) {
-        if (!PermissionUtils.hasAll(requireContext())) { requestPermissions(PermissionUtils.REQUIRED, 100); return }
+        if (!PermissionUtils.hasAll(requireContext())) {
+            requestPermissions(PermissionUtils.REQUIRED, 100)
+            return
+        }
         val clean = PhoneUtils.cleanNumber(number)
         viewModel.saveLastNumber(clean)
-        startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
+
+        val telecom = requireContext().getSystemService(TelecomManager::class.java)
+        if (telecom?.defaultDialerPackage == requireContext().packageName) {
+            // ✅ Somos el dialer predeterminado — llamada directa sin abrir otra app
+            val uri = Uri.fromParts("tel", clean, null)
+            telecom.placeCall(uri, Bundle())
+        } else {
+            // Respaldo mientras el usuario no ha aceptado el rol predeterminado
+            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
+        }
     }
 
     private fun setupSensor() {

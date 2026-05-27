@@ -74,6 +74,23 @@
             android:turnScreenOn="true"
             android:theme="@style/Theme.MigDialer.Fullscreen" />
 
+        <!--
+            InCallService: REQUERIDO para ser dialer predeterminado.
+            Sin este servicio Android no permite que la app gestione
+            llamadas directamente con TelecomManager.placeCall().
+        -->
+        <service
+            android:name=".MigInCallService"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
