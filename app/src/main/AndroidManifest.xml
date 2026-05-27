@@ -22,7 +22,7 @@
         android:theme="@style/Theme.MigDialer"
         android:hardwareAccelerated="true">
 
-        <!-- Main Activity -->
+        <!-- Main Activity / Marcador -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -35,39 +35,34 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="tel" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="tel" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="tel" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.CALL_BUTTON" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <!-- Pantalla de llamada activa -->
+        <!-- Pantalla de llamada activa (saliente) -->
         <activity
             android:name=".ui.dialer.InCallActivity"
             android:exported="false"
@@ -78,7 +73,7 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.MigDialer" />
 
-        <!-- Pantalla de llamada entrante (Phase 3) -->
+        <!-- Pantalla de llamada entrante -->
         <activity
             android:name=".ui.dialer.IncomingCallActivity"
             android:exported="false"
@@ -86,9 +81,10 @@
             android:launchMode="singleInstance"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.MigDialer.Fullscreen" />
 
-        <!-- InCallService: requerido para ser dialer predeterminado -->
+        <!-- InCallService requerido para ser dialer predeterminado -->
         <service
             android:name=".MigInCallService"
             android:exported="true"

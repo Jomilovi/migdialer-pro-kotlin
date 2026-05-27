@@ -4,6 +4,7 @@ import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
 import com.migdialer.pro.ui.dialer.InCallActivity
+import com.migdialer.pro.ui.dialer.IncomingCallActivity
 
 class MigInCallService : InCallService() {
 
@@ -12,16 +13,24 @@ class MigInCallService : InCallService() {
         currentCall = call
         call.registerCallback(callStateCallback)
 
-        // Lanzar pantalla de llamada activa
-        val intent = Intent(this, InCallActivity::class.java).apply {
-            addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-            )
-            putExtra(InCallActivity.EXTRA_DISPLAY_NAME, getDisplayName(call))
+        val displayName = getDisplayName(call)
+
+        when (call.state) {
+            Call.STATE_RINGING -> {
+                // Llamada entrante — mostrar pantalla para contestar/rechazar
+                startActivity(Intent(this, IncomingCallActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    putExtra(IncomingCallActivity.EXTRA_DISPLAY_NAME, displayName)
+                })
+            }
+            else -> {
+                // Llamada saliente — mostrar pantalla de llamada activa
+                startActivity(Intent(this, InCallActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    putExtra(InCallActivity.EXTRA_DISPLAY_NAME, displayName)
+                })
+            }
         }
-        startActivity(intent)
     }
 
     override fun onCallRemoved(call: Call) {
@@ -32,7 +41,6 @@ class MigInCallService : InCallService() {
 
     private val callStateCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
-            // Notificar a la Activity si está activa
             stateListener?.invoke(state)
         }
     }
@@ -45,10 +53,7 @@ class MigInCallService : InCallService() {
     }
 
     companion object {
-        // La llamada activa actual — accesible desde InCallActivity
         @Volatile var currentCall: Call? = null
-
-        // Listener de estado — InCallActivity lo asigna al crearse
         var stateListener: ((Int) -> Unit)? = null
     }
 }

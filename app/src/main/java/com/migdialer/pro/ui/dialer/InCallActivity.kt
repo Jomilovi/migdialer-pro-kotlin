@@ -37,7 +37,6 @@ class InCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Mostrar sobre pantalla de bloqueo y mantener encendido
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -53,20 +52,14 @@ class InCallActivity : AppCompatActivity() {
 
         audioManager = getSystemService(AudioManager::class.java)
 
-        // Nombre o número del caller
         val name = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: ""
         binding.tvCallerName.text = name.ifBlank { getString(R.string.unknown_caller) }
         binding.tvCallStatus.text = getString(R.string.call_dialing)
 
         setupButtons()
 
-        // Registrar listener de estado en el servicio
         MigInCallService.stateListener = { state -> runOnUiThread { handleCallState(state) } }
-
-        // Sincronizar estado actual si la llamada ya existe
-        MigInCallService.currentCall?.let { call ->
-            handleCallState(call.state)
-        }
+        MigInCallService.currentCall?.let { handleCallState(it.state) }
     }
 
     private fun setupButtons() {
@@ -77,16 +70,16 @@ class InCallActivity : AppCompatActivity() {
                 if (isMuted) R.drawable.ic_mute_off else R.drawable.ic_mute
             )
             binding.icMute.alpha = if (isMuted) 1f else 0.5f
-            binding.tvMuteLabel.text = if (isMuted)
-                getString(R.string.mute_on) else getString(R.string.mute_off)
+            binding.tvMuteLabel.text =
+                if (isMuted) getString(R.string.mute_on) else getString(R.string.mute_off)
         }
 
         binding.btnSpeaker.setOnClickListener {
             isSpeaker = !isSpeaker
-            audioManager.isSpeakerphoneOn = isSpeaker
+            setSpeakerphone(isSpeaker)
             binding.icSpeaker.alpha = if (isSpeaker) 1f else 0.5f
-            binding.tvSpeakerLabel.text = if (isSpeaker)
-                getString(R.string.speaker_on) else getString(R.string.speaker_off)
+            binding.tvSpeakerLabel.text =
+                if (isSpeaker) getString(R.string.speaker_on) else getString(R.string.speaker_off)
         }
 
         binding.btnEndCall.setOnClickListener {
@@ -95,16 +88,33 @@ class InCallActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Activar/desactivar altavoz correctamente durante una llamada.
+     * Requiere primero poner el modo de audio en MODE_IN_CALL.
+     */
+    private fun setSpeakerphone(on: Boolean) {
+        if (on) {
+            audioManager.mode = AudioManager.MODE_IN_CALL
+            audioManager.isSpeakerphoneOn = true
+        } else {
+            audioManager.isSpeakerphoneOn = false
+            audioManager.mode = AudioManager.MODE_IN_CALL
+        }
+    }
+
     private fun handleCallState(state: Int) {
         when (state) {
             Call.STATE_CONNECTING,
             Call.STATE_DIALING -> {
                 binding.tvCallStatus.text = getString(R.string.call_dialing)
+                // Poner audio en modo llamada desde el inicio
+                audioManager.mode = AudioManager.MODE_IN_CALL
             }
             Call.STATE_RINGING -> {
                 binding.tvCallStatus.text = getString(R.string.call_ringing)
             }
             Call.STATE_ACTIVE -> {
+                audioManager.mode = AudioManager.MODE_IN_CALL
                 if (!callConnected) {
                     callConnected = true
                     secondsElapsed = 0
@@ -127,15 +137,12 @@ class InCallActivity : AppCompatActivity() {
         super.onDestroy()
         handler.removeCallbacks(timerRunnable)
         MigInCallService.stateListener = null
-        // Restaurar audio al estado normal
-        audioManager.isMicrophoneMute = false
         audioManager.isSpeakerphoneOn = false
+        audioManager.mode = AudioManager.MODE_NORMAL
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        // No salir con botón atrás durante llamada activa
-    }
+    override fun onBackPressed() { /* Bloquear back durante llamada */ }
 
     companion object {
         const val EXTRA_DISPLAY_NAME = "display_name"
