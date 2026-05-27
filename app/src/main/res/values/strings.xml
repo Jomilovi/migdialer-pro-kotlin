@@ -13,4 +13,8 @@
     <string name="incoming_call">Llamada entrante</string>
     <string name="accept">Contestar</string>
     <string name="decline">Rechazar</string>
+    <string name="call_dialing">Marcando…</string>
+    <string name="call_ringing">Llamando…</string>
+    <string name="call_on_hold">En espera</string>
+    <string name="unknown_caller">Número desconocido</string>
 </resources>

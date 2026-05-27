@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Phone permissions -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -9,16 +8,10 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-
-    <!-- Contacts -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <!-- Audio / sensor -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- No internet needed - 100% offline -->
 
     <application
         android:allowBackup="false"
@@ -43,7 +36,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Dialer: manejar DIAL, CALL y VIEW con esquema tel -->
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -75,7 +67,18 @@
             </intent-filter>
         </activity>
 
-        <!-- Incoming call screen -->
+        <!-- Pantalla de llamada activa -->
+        <activity
+            android:name=".ui.dialer.InCallActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.MigDialer" />
+
+        <!-- Pantalla de llamada entrante (Phase 3) -->
         <activity
             android:name=".ui.dialer.IncomingCallActivity"
             android:exported="false"
@@ -85,11 +88,7 @@
             android:turnScreenOn="true"
             android:theme="@style/Theme.MigDialer.Fullscreen" />
 
-        <!--
-            InCallService: REQUERIDO para ser dialer predeterminado.
-            Sin este servicio Android no permite que la app gestione
-            llamadas directamente con TelecomManager.placeCall().
-        -->
+        <!-- InCallService: requerido para ser dialer predeterminado -->
         <service
             android:name=".MigInCallService"
             android:exported="true"
@@ -102,11 +101,7 @@
             </intent-filter>
         </service>
 
-        <!--
-            BroadcastReceiver para estado del teléfono.
-            Requerido por Samsung y otros fabricantes para reconocer
-            la app como dialer válido en la lista de apps predeterminadas.
-        -->
+        <!-- BroadcastReceiver para estado del teléfono -->
         <receiver
             android:name=".CallReceiver"
             android:exported="true">
