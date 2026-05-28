@@ -1,7 +1,6 @@
 package com.migdialer.pro.ui.dialer
 
 import android.media.AudioAttributes
-import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
@@ -146,25 +145,18 @@ class InCallActivity : AppCompatActivity() {
     }
 
     /**
-     * Activa/desactiva el altavoz correctamente en Android 12+.
+     * isSpeakerphoneOn con Handler delay — única solución que funciona universalmente
+     * en Samsung/Xiaomi Android 12+.
      *
-     * isSpeakerphoneOn está deprecated desde API 31 y Samsung lo ignora.
-     * La API correcta es setCommunicationDevice con TYPE_BUILTIN_SPEAKER.
-     * Primero pedimos AudioFocus para que el sistema nos ceda el control de audio.
+     * setCommunicationDevice() falla porque availableCommunicationDevices devuelve
+     * lista vacía hasta que el modem confirma la llamada activa.
+     * El delay de 300ms da tiempo al sistema para registrar el estado de la llamada.
      */
     private fun toggleSpeaker(on: Boolean) {
-        if (on) {
-            val speaker = audioManager.availableCommunicationDevices
-                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
-            if (speaker != null) {
-                audioManager.setCommunicationDevice(speaker)
-                return
-            }
+        handler.postDelayed({
             @Suppress("DEPRECATION")
-            audioManager.isSpeakerphoneOn = true
-        } else {
-            audioManager.clearCommunicationDevice()
-        }
+            audioManager.isSpeakerphoneOn = on
+        }, 300)
     }
 
     private fun handleCallState(state: Int) {
