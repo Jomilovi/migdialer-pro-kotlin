@@ -153,9 +153,15 @@ class InCallActivity : AppCompatActivity() {
      * El delay de 300ms da tiempo al sistema para registrar el estado de la llamada.
      */
     private fun toggleSpeaker(on: Boolean) {
+        android.util.Log.d("MigDialer_Audio", "toggleSpeaker: on=$on")
+        android.util.Log.d("MigDialer_Audio", "audioManager.mode=${audioManager.mode}")
+        android.util.Log.d("MigDialer_Audio", "availableCommunicationDevices=${audioManager.availableCommunicationDevices.map { it.type }}")
+        android.util.Log.d("MigDialer_Audio", "currentCommunicationDevice=${audioManager.communicationDevice?.type}")
+
         handler.postDelayed({
             @Suppress("DEPRECATION")
             audioManager.isSpeakerphoneOn = on
+            android.util.Log.d("MigDialer_Audio", "isSpeakerphoneOn set to $on, actual=${audioManager.isSpeakerphoneOn}")
         }, 300)
     }
 
