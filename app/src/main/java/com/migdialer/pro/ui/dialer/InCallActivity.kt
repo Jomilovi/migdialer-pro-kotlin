@@ -1,5 +1,6 @@
 package com.migdialer.pro.ui.dialer
 
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
@@ -55,20 +56,18 @@ class InCallActivity : AppCompatActivity() {
 
         audioManager = getSystemService(AudioManager::class.java)
 
-        // Nombre
-        val name = intent.getStringExtra(MigInCallService.EXTRA_DISPLAY_NAME) ?: ""
+        val name     = intent.getStringExtra(MigInCallService.EXTRA_DISPLAY_NAME) ?: ""
+        val photoUri = intent.getStringExtra(MigInCallService.EXTRA_PHOTO_URI)
+        val initial  = name.firstOrNull()?.uppercase() ?: "#"
+
         binding.tvCallerName.text = name.ifBlank { getString(R.string.unknown_caller) }
         binding.tvCallStatus.text = getString(R.string.call_dialing)
 
-        // Foto + inicial
-        val photoUri = intent.getStringExtra(MigInCallService.EXTRA_PHOTO_URI)
-        val initial  = name.firstOrNull()?.uppercase() ?: "#"
         loadAvatar(photoUri, initial)
-
         setupButtons()
 
-        // Modo audio desde el inicio
-        audioManager.mode = AudioManager.MODE_IN_CALL
+        // Activar modo audio para llamada
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
 
         MigInCallService.stateListener = { state -> runOnUiThread { handleCallState(state) } }
         MigInCallService.currentCall?.let { handleCallState(it.state) }
@@ -95,7 +94,7 @@ class InCallActivity : AppCompatActivity() {
             binding.icMute.setImageResource(
                 if (isMuted) R.drawable.ic_mute_off else R.drawable.ic_mute
             )
-            binding.icMute.alpha    = if (isMuted) 1f else 0.5f
+            binding.icMute.alpha     = if (isMuted) 1f else 0.5f
             binding.tvMuteLabel.text = getString(
                 if (isMuted) R.string.mute_on else R.string.mute_off
             )
@@ -103,8 +102,7 @@ class InCallActivity : AppCompatActivity() {
 
         binding.btnSpeaker.setOnClickListener {
             isSpeaker = !isSpeaker
-            audioManager.mode = AudioManager.MODE_IN_CALL
-            audioManager.isSpeakerphoneOn = isSpeaker
+            toggleSpeaker(isSpeaker)
             binding.icSpeaker.alpha     = if (isSpeaker) 1f else 0.5f
             binding.tvSpeakerLabel.text = getString(
                 if (isSpeaker) R.string.speaker_on else R.string.speaker_off
@@ -117,18 +115,43 @@ class InCallActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Activa/desactiva el altavoz correctamente en Android 12+.
+     *
+     * isSpeakerphoneOn está deprecated desde API 31 y Samsung lo ignora.
+     * La API correcta es setCommunicationDevice con TYPE_BUILTIN_SPEAKER.
+     * Si no hay speaker disponible, cae al método legacy como respaldo.
+     */
+    private fun toggleSpeaker(on: Boolean) {
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+
+        if (on) {
+            val speaker = audioManager.availableCommunicationDevices
+                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
+            if (speaker != null) {
+                audioManager.setCommunicationDevice(speaker)
+            } else {
+                // Respaldo para dispositivos donde no aparece en la lista
+                @Suppress("DEPRECATION")
+                audioManager.isSpeakerphoneOn = true
+            }
+        } else {
+            audioManager.clearCommunicationDevice()
+        }
+    }
+
     private fun handleCallState(state: Int) {
         when (state) {
             Call.STATE_CONNECTING,
             Call.STATE_DIALING -> {
                 binding.tvCallStatus.text = getString(R.string.call_dialing)
-                audioManager.mode = AudioManager.MODE_IN_CALL
+                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             }
             Call.STATE_RINGING -> {
                 binding.tvCallStatus.text = getString(R.string.call_ringing)
             }
             Call.STATE_ACTIVE -> {
-                audioManager.mode = AudioManager.MODE_IN_CALL
+                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
                 if (!callConnected) {
                     callConnected  = true
                     secondsElapsed = 0
@@ -151,8 +174,8 @@ class InCallActivity : AppCompatActivity() {
         super.onDestroy()
         handler.removeCallbacks(timerRunnable)
         MigInCallService.stateListener = null
-        audioManager.isSpeakerphoneOn  = false
-        audioManager.mode              = AudioManager.MODE_NORMAL
+        audioManager.clearCommunicationDevice()
+        audioManager.mode = AudioManager.MODE_NORMAL
     }
 
     @Deprecated("Deprecated in Java")
