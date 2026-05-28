@@ -69,8 +69,7 @@ class InCallActivity : AppCompatActivity() {
         loadAvatar(photoUri, initial)
         setupButtons()
 
-        // Activar modo audio y pedir AudioFocus antes de la llamada
-        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+        // Pedir AudioFocus — el modo de audio lo gestiona el sistema via InCallService
         requestAudioFocus()
 
         MigInCallService.stateListener = { state -> runOnUiThread { handleCallState(state) } }
@@ -147,16 +146,13 @@ class InCallActivity : AppCompatActivity() {
      * Primero pedimos AudioFocus para que el sistema nos ceda el control de audio.
      */
     private fun toggleSpeaker(on: Boolean) {
-        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-
         if (on) {
             val speaker = audioManager.availableCommunicationDevices
                 .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
             if (speaker != null) {
                 audioManager.setCommunicationDevice(speaker)
-                return  // No continuar — evita que isSpeakerphoneOn sobrescriba
+                return
             }
-            // Respaldo solo si el speaker no aparece en availableCommunicationDevices
             @Suppress("DEPRECATION")
             audioManager.isSpeakerphoneOn = true
         } else {
@@ -169,13 +165,11 @@ class InCallActivity : AppCompatActivity() {
             Call.STATE_CONNECTING,
             Call.STATE_DIALING -> {
                 binding.tvCallStatus.text = getString(R.string.call_dialing)
-                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             }
             Call.STATE_RINGING -> {
                 binding.tvCallStatus.text = getString(R.string.call_ringing)
             }
             Call.STATE_ACTIVE -> {
-                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
                 if (!callConnected) {
                     callConnected  = true
                     secondsElapsed = 0
@@ -200,7 +194,6 @@ class InCallActivity : AppCompatActivity() {
         MigInCallService.stateListener = null
         audioManager.clearCommunicationDevice()
         audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
-        audioManager.mode = AudioManager.MODE_NORMAL
     }
 
     @Deprecated("Deprecated in Java")
