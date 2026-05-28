@@ -130,11 +130,11 @@ class InCallActivity : AppCompatActivity() {
                 .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
             if (speaker != null) {
                 audioManager.setCommunicationDevice(speaker)
-            } else {
-                // Respaldo para dispositivos donde no aparece en la lista
-                @Suppress("DEPRECATION")
-                audioManager.isSpeakerphoneOn = true
+                return  // ✅ No continuar — evita que isSpeakerphoneOn sobrescriba
             }
+            // Respaldo solo si el speaker no aparece en availableCommunicationDevices
+            @Suppress("DEPRECATION")
+            audioManager.isSpeakerphoneOn = true
         } else {
             audioManager.clearCommunicationDevice()
         }
