@@ -29,6 +29,7 @@ class InCallActivity : AppCompatActivity() {
     private var callConnected = false
     private var secondsElapsed = 0
     private var audioFocusRequest: AudioFocusRequest? = null
+    private var pendingSpeaker = false // speaker solicitado antes de que la llamada esté activa
 
     private val handler = Handler(Looper.getMainLooper())
     private val timerRunnable = object : Runnable {
@@ -105,7 +106,13 @@ class InCallActivity : AppCompatActivity() {
 
         binding.btnSpeaker.setOnClickListener {
             isSpeaker = !isSpeaker
-            toggleSpeaker(isSpeaker)
+            if (callConnected) {
+                // Llamada activa — aplicar inmediatamente
+                toggleSpeaker(isSpeaker)
+            } else {
+                // Llamada aún no activa — guardar para aplicar cuando conecte
+                pendingSpeaker = isSpeaker
+            }
             binding.icSpeaker.alpha     = if (isSpeaker) 1f else 0.5f
             binding.tvSpeakerLabel.text = getString(
                 if (isSpeaker) R.string.speaker_on else R.string.speaker_off
@@ -174,6 +181,8 @@ class InCallActivity : AppCompatActivity() {
                     callConnected  = true
                     secondsElapsed = 0
                     handler.post(timerRunnable)
+                    // Aplicar speaker si el usuario lo pidió antes de conectar
+                    if (pendingSpeaker) toggleSpeaker(true)
                 }
             }
             Call.STATE_HOLDING -> {
