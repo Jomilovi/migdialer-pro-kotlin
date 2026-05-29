@@ -145,19 +145,8 @@ class InCallActivity : AppCompatActivity() {
     }
 
     private fun toggleSpeaker(on: Boolean) {
-        if (on) {
-            // Truco Samsung RIL: SCO fuerza al modem a liberar el control del audio
-            audioManager.startBluetoothSco()
-            handler.postDelayed({
-                audioManager.stopBluetoothSco()
-                audioManager.isBluetoothScoOn = false
-                @Suppress("DEPRECATION")
-                audioManager.isSpeakerphoneOn = true
-            }, 200)
-        } else {
-            @Suppress("DEPRECATION")
-            audioManager.isSpeakerphoneOn = false
-        }
+        @Suppress("DEPRECATION")
+        audioManager.isSpeakerphoneOn = on
     }
 
     private fun handleCallState(state: Int) {
