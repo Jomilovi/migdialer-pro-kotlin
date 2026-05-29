@@ -12,8 +12,10 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <application
+        android:name=".MigApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -22,7 +24,6 @@
         android:theme="@style/Theme.MigDialer"
         android:hardwareAccelerated="true">
 
-        <!-- Main Activity / Marcador -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,7 +31,6 @@
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -62,7 +62,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Pantalla de llamada activa (saliente) -->
+        <!-- Pantalla de llamada activa -->
         <activity
             android:name=".ui.dialer.InCallActivity"
             android:exported="false"
@@ -84,7 +84,7 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.MigDialer.Fullscreen" />
 
-        <!-- InCallService requerido para ser dialer predeterminado -->
+        <!-- InCallService: requerido para ser dialer predeterminado -->
         <service
             android:name=".MigInCallService"
             android:exported="true"
@@ -94,6 +94,16 @@
                 android:value="true" />
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <!-- ConnectionService: control total de audio incluyendo altavoz en Samsung -->
+        <service
+            android:name=".MigConnectionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
 

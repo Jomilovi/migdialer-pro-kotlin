@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.migdialer.pro.MigApp
 import com.migdialer.pro.databinding.FragmentRecentsBinding
 import com.migdialer.pro.utils.PhoneUtils
 
@@ -17,33 +18,22 @@ class RecentsFragment : Fragment() {
 
     private var _binding: FragmentRecentsBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: RecentsViewModel by viewModels {
-        RecentsViewModelFactory(requireContext())
-    }
-
+    private val viewModel: RecentsViewModel by viewModels { RecentsViewModelFactory(requireContext()) }
     private lateinit var adapter: RecentsAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRecentsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        adapter = RecentsAdapter { number ->
-            placeCall(number)
-        }
-
+        adapter = RecentsAdapter { number -> placeCall(number) }
         binding.rvRecents.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@RecentsFragment.adapter
             setHasFixedSize(false)
         }
-
         viewModel.items.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
             binding.emptyState.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
@@ -55,27 +45,19 @@ class RecentsFragment : Fragment() {
         viewModel.load()
     }
 
-    /**
-     * Realiza la llamada directamente vía TelecomManager si somos el dialer predeterminado.
-     * Si el usuario aún no nos dio el rol, usa ACTION_CALL como respaldo.
-     */
     private fun placeCall(number: String) {
-        val clean = PhoneUtils.cleanNumber(number)
-        val telecom = requireContext().getSystemService(TelecomManager::class.java)
-        if (telecom?.defaultDialerPackage == requireContext().packageName) {
-            val uri = Uri.fromParts("tel", clean, null)
-            telecom.placeCall(uri, Bundle())
-        } else {
-            try {
-                startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
-            } catch (e: SecurityException) {
-                // Permission not granted
-            }
+        val clean   = PhoneUtils.cleanNumber(number)
+        val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
+        val uri     = Uri.fromParts("tel", clean, null)
+        val extras  = Bundle().apply {
+            putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, MigApp.getPhoneAccountHandle(requireContext()))
+        }
+        try {
+            telecom.placeCall(uri, extras)
+        } catch (e: SecurityException) {
+            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

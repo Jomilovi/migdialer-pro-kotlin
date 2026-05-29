@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.migdialer.pro.MigConnection
 import com.migdialer.pro.MigInCallService
 import com.migdialer.pro.R
 import com.migdialer.pro.databinding.ActivityInCallBinding
@@ -145,25 +146,18 @@ class InCallActivity : AppCompatActivity() {
     }
 
     /**
-     * isSpeakerphoneOn con Handler delay — única solución que funciona universalmente
-     * en Samsung/Xiaomi Android 12+.
-     *
-     * setCommunicationDevice() falla porque availableCommunicationDevices devuelve
-     * lista vacía hasta que el modem confirma la llamada activa.
-     * El delay de 300ms da tiempo al sistema para registrar el estado de la llamada.
+     * Altavoz via MigConnection — tenemos control directo del audio
+     * desde dentro del stack de telecom, Samsung no puede bloquearlo.
      */
     private fun toggleSpeaker(on: Boolean) {
-        handler.postDelayed({
-            if (on) {
+        MigConnection.current?.setSpeaker(on) ?: run {
+            // Fallback si ConnectionService no está activo
+            handler.postDelayed({
                 audioManager.mode = AudioManager.MODE_IN_CALL
                 @Suppress("DEPRECATION")
-                audioManager.isSpeakerphoneOn = true
-            } else {
-                @Suppress("DEPRECATION")
-                audioManager.isSpeakerphoneOn = false
-                audioManager.mode = AudioManager.MODE_IN_CALL
-            }
-        }, 300)
+                audioManager.isSpeakerphoneOn = on
+            }, 300)
+        }
     }
 
     private fun handleCallState(state: Int) {

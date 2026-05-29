@@ -6,7 +6,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -24,6 +23,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.migdialer.pro.MigApp
 import com.migdialer.pro.R
 import com.migdialer.pro.databinding.FragmentDialerBinding
 import com.migdialer.pro.utils.PermissionUtils
@@ -41,7 +41,6 @@ class DialerFragment : Fragment(), SensorEventListener {
     private lateinit var suggestionsAdapter: SuggestionsAdapter
     private var sensorManager: SensorManager? = null
     private var proximitySensor: Sensor? = null
-    private var audioManager: AudioManager? = null
 
     private val keyRows = listOf(
         listOf("1" to "", "2" to "ABC", "3" to "DEF"),
@@ -79,9 +78,9 @@ class DialerFragment : Fragment(), SensorEventListener {
     private fun buildKeypad() {
         val container = binding.keypadContainer
         container.removeAllViews()
-        val density = resources.displayMetrics.density
-        val keySize = (72 * density).toInt()
-        val margin  = (5 * density).toInt()
+        val density  = resources.displayMetrics.density
+        val keySize  = (72 * density).toInt()
+        val margin   = (5 * density).toInt()
         val boldFont = try { ResourcesCompat.getFont(requireContext(), R.font.poppins_semibold) } catch (e: Exception) { Typeface.DEFAULT_BOLD }
         val monoFont = try { ResourcesCompat.getFont(requireContext(), R.font.mono) } catch (e: Exception) { Typeface.MONOSPACE }
 
@@ -147,10 +146,6 @@ class DialerFragment : Fragment(), SensorEventListener {
         }
     }
 
-    /**
-     * Realiza la llamada directamente vía TelecomManager si somos el dialer predeterminado.
-     * Si el usuario aún no nos dio el rol, usa ACTION_CALL como respaldo.
-     */
     private fun placeCall(number: String) {
         if (!PermissionUtils.hasAll(requireContext())) {
             requestPermissions(PermissionUtils.REQUIRED, 100)
@@ -159,21 +154,27 @@ class DialerFragment : Fragment(), SensorEventListener {
         val clean = PhoneUtils.cleanNumber(number)
         viewModel.saveLastNumber(clean)
 
-        val telecom = requireContext().getSystemService(TelecomManager::class.java)
-        if (telecom?.defaultDialerPackage == requireContext().packageName) {
-            // ✅ Somos el dialer predeterminado — llamada directa sin abrir otra app
-            val uri = Uri.fromParts("tel", clean, null)
-            telecom.placeCall(uri, Bundle())
-        } else {
-            // Respaldo mientras el usuario no ha aceptado el rol predeterminado
+        val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
+        val uri     = Uri.fromParts("tel", clean, null)
+
+        val extras = Bundle().apply {
+            putParcelable(
+                TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
+                MigApp.getPhoneAccountHandle(requireContext())
+            )
+        }
+
+        try {
+            telecom.placeCall(uri, extras)
+        } catch (e: SecurityException) {
+            // Fallback si no tenemos permiso CALL_PHONE
             startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
         }
     }
 
     private fun setupSensor() {
-        sensorManager = requireContext().getSystemService(SensorManager::class.java)
+        sensorManager   = requireContext().getSystemService(SensorManager::class.java)
         proximitySensor = sensorManager?.getDefaultSensor(Sensor.TYPE_PROXIMITY)
-        audioManager = requireContext().getSystemService(AudioManager::class.java)
     }
 
     override fun onResume() {
@@ -184,15 +185,7 @@ class DialerFragment : Fragment(), SensorEventListener {
 
     override fun onPause() { super.onPause(); sensorManager?.unregisterListener(this) }
 
-    override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type != Sensor.TYPE_PROXIMITY) return
-        val nearEar = event.values[0] < (proximitySensor?.maximumRange ?: 5f) * 0.5f
-        audioManager?.let { am ->
-            if (nearEar && am.isSpeakerphoneOn) am.isSpeakerphoneOn = false
-            else if (!nearEar && !am.isSpeakerphoneOn) am.isSpeakerphoneOn = true
-        }
-    }
-
+    override fun onSensorChanged(event: SensorEvent) { }
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun vibrate() {
