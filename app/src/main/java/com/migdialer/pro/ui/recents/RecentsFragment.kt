@@ -44,13 +44,9 @@ class RecentsFragment : Fragment() {
     private fun placeCall(number: String) {
         val clean   = PhoneUtils.cleanNumber(number)
         val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
-        val uri     = Uri.fromParts("tel", clean, null)
-        val simAccounts = try { telecom.callCapablePhoneAccounts } catch (e: Exception) { emptyList() }
-        val extras = Bundle()
-        if (simAccounts.isNotEmpty()) extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simAccounts[0])
         try {
-            telecom.placeCall(uri, extras)
-        } catch (e: SecurityException) {
+            telecom.placeCall(Uri.fromParts("tel", clean, null), Bundle())
+        } catch (e: Exception) {
             startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
         }
     }

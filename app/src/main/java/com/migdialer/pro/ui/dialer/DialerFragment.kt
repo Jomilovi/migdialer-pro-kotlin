@@ -155,29 +155,16 @@ class DialerFragment : Fragment(), SensorEventListener {
             requestPermissions(PermissionUtils.REQUIRED, 100)
             return
         }
-        val clean   = PhoneUtils.cleanNumber(number)
+        val clean = PhoneUtils.cleanNumber(number)
         viewModel.saveLastNumber(clean)
 
         val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
         val uri     = Uri.fromParts("tel", clean, null)
 
-        // Obtener PhoneAccount de la SIM activa sin crashear si no hay permiso
-        val extras = Bundle()
         try {
-            val simAccounts = telecom.callCapablePhoneAccounts
-            if (simAccounts.isNotEmpty()) {
-                extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simAccounts[0])
-            }
+            // Bundle vacío — dejar que Samsung elija la SIM predeterminada
+            telecom.placeCall(uri, Bundle())
         } catch (e: Exception) {
-            // Sin acceso a SIM accounts — dejar que el sistema elija
-        }
-
-        try {
-            telecom.placeCall(uri, extras)
-        } catch (e: SecurityException) {
-            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
-        } catch (e: Exception) {
-            // Último recurso
             startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
         }
     }
