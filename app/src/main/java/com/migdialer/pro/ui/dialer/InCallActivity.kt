@@ -14,7 +14,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.migdialer.pro.MigConnection
 import com.migdialer.pro.MigInCallService
 import com.migdialer.pro.R
 import com.migdialer.pro.databinding.ActivityInCallBinding
@@ -145,19 +144,12 @@ class InCallActivity : AppCompatActivity() {
         audioManager.requestAudioFocus(audioFocusRequest!!)
     }
 
-    /**
-     * Altavoz via MigConnection — tenemos control directo del audio
-     * desde dentro del stack de telecom, Samsung no puede bloquearlo.
-     */
     private fun toggleSpeaker(on: Boolean) {
-        MigConnection.current?.setSpeaker(on) ?: run {
-            // Fallback si ConnectionService no está activo
-            handler.postDelayed({
-                audioManager.mode = AudioManager.MODE_IN_CALL
-                @Suppress("DEPRECATION")
-                audioManager.isSpeakerphoneOn = on
-            }, 300)
-        }
+        handler.postDelayed({
+            audioManager.mode = AudioManager.MODE_IN_CALL
+            @Suppress("DEPRECATION")
+            audioManager.isSpeakerphoneOn = on
+        }, 500)
     }
 
     private fun handleCallState(state: Int) {

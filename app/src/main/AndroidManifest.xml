@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
@@ -12,10 +13,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <application
-        android:name=".MigApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -62,7 +61,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Pantalla de llamada activa -->
         <activity
             android:name=".ui.dialer.InCallActivity"
             android:exported="false"
@@ -73,7 +71,6 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.MigDialer" />
 
-        <!-- Pantalla de llamada entrante -->
         <activity
             android:name=".ui.dialer.IncomingCallActivity"
             android:exported="false"
@@ -97,17 +94,6 @@
             </intent-filter>
         </service>
 
-        <!-- ConnectionService: control total de audio incluyendo altavoz en Samsung -->
-        <service
-            android:name=".MigConnectionService"
-            android:exported="true"
-            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
-            <intent-filter>
-                <action android:name="android.telecom.ConnectionService" />
-            </intent-filter>
-        </service>
-
-        <!-- BroadcastReceiver para estado del teléfono -->
         <receiver
             android:name=".CallReceiver"
             android:exported="true">
