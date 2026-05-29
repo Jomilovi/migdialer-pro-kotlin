@@ -5,15 +5,14 @@ import android.os.Bundle
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
-import android.telecom.DisconnectCause
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 
 /**
- * ConnectionService propio — reemplaza TelecomManager.placeCall().
+ * ConnectionService como CONNECTION_MANAGER.
  *
- * Con ConnectionService tenemos control total del audio incluyendo altavoz,
- * a diferencia de placeCall() donde Samsung RIL bloquea el enrutamiento.
+ * Actúa como intermediario entre la app y el operador (SIM).
+ * Delega la llamada real al operador pero retiene control del audio.
  */
 class MigConnectionService : ConnectionService() {
 
@@ -21,8 +20,27 @@ class MigConnectionService : ConnectionService() {
         connectionManagerAccount: PhoneAccountHandle?,
         request: ConnectionRequest
     ): Connection {
+        // Crear nuestra Connection para control de audio
         val connection = MigConnection(request.address)
         MigConnection.current = connection
+
+        // Delegar la llamada real al operador telefónico (SIM)
+        val telecom = getSystemService(TelecomManager::class.java)
+        val simAccounts = telecom?.callCapablePhoneAccounts
+
+        if (!simAccounts.isNullOrEmpty()) {
+            // Usar la primera SIM disponible para la llamada real
+            val simHandle = simAccounts[0]
+            val extras = Bundle().apply {
+                putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simHandle)
+            }
+            try {
+                telecom.placeCall(request.address, extras)
+            } catch (e: Exception) {
+                // Si falla, la connection manejará el estado
+            }
+        }
+
         return connection
     }
 
@@ -30,6 +48,6 @@ class MigConnectionService : ConnectionService() {
         connectionManagerAccount: PhoneAccountHandle?,
         request: ConnectionRequest
     ) {
-        // Fallback: si falla el ConnectionService, la llamada no se inicia
+        MigConnection.current = null
     }
 }

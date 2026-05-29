@@ -23,7 +23,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.migdialer.pro.MigApp
 import com.migdialer.pro.R
 import com.migdialer.pro.databinding.FragmentDialerBinding
 import com.migdialer.pro.utils.PermissionUtils
@@ -146,28 +145,32 @@ class DialerFragment : Fragment(), SensorEventListener {
         }
     }
 
+    /**
+     * Inicia llamada usando la SIM directamente via TelecomManager.
+     * Pasamos el PhoneAccount de la SIM para que el operador maneje la llamada real.
+     * Nuestro InCallService recibe la llamada y muestra la UI.
+     */
     private fun placeCall(number: String) {
         if (!PermissionUtils.hasAll(requireContext())) {
             requestPermissions(PermissionUtils.REQUIRED, 100)
             return
         }
-        val clean = PhoneUtils.cleanNumber(number)
+        val clean   = PhoneUtils.cleanNumber(number)
         viewModel.saveLastNumber(clean)
 
         val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
         val uri     = Uri.fromParts("tel", clean, null)
 
-        val extras = Bundle().apply {
-            putParcelable(
-                TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                MigApp.getPhoneAccountHandle(requireContext())
-            )
+        // Obtener el PhoneAccount de la SIM activa
+        val simAccounts = try { telecom.callCapablePhoneAccounts } catch (e: Exception) { emptyList() }
+        val extras = Bundle()
+        if (simAccounts.isNotEmpty()) {
+            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simAccounts[0])
         }
 
         try {
             telecom.placeCall(uri, extras)
         } catch (e: SecurityException) {
-            // Fallback si no tenemos permiso CALL_PHONE
             startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$clean")))
         }
     }
@@ -184,8 +187,7 @@ class DialerFragment : Fragment(), SensorEventListener {
     }
 
     override fun onPause() { super.onPause(); sensorManager?.unregisterListener(this) }
-
-    override fun onSensorChanged(event: SensorEvent) { }
+    override fun onSensorChanged(event: SensorEvent) {}
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun vibrate() {

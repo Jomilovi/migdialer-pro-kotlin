@@ -6,10 +6,6 @@ import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 
-/**
- * Application class — registra el PhoneAccount al arrancar la app.
- * El PhoneAccount es requerido por ConnectionService para manejar llamadas.
- */
 class MigApp : Application() {
 
     override fun onCreate() {
@@ -23,15 +19,10 @@ class MigApp : Application() {
         val handle  = getPhoneAccountHandle()
 
         val account = PhoneAccount.builder(handle, getString(R.string.app_name))
-            .setCapabilities(
-                PhoneAccount.CAPABILITY_CALL_PROVIDER or
-                PhoneAccount.CAPABILITY_CONNECTION_MANAGER
-            )
+            .setCapabilities(PhoneAccount.CAPABILITY_CONNECTION_MANAGER)
             .build()
 
         telecom.registerPhoneAccount(account)
-
-
     }
 
     companion object {

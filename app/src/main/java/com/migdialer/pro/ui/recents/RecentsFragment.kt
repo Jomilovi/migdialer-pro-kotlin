@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.migdialer.pro.MigApp
 import com.migdialer.pro.databinding.FragmentRecentsBinding
 import com.migdialer.pro.utils.PhoneUtils
 
@@ -40,18 +39,15 @@ class RecentsFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.load()
-    }
+    override fun onResume() { super.onResume(); viewModel.load() }
 
     private fun placeCall(number: String) {
         val clean   = PhoneUtils.cleanNumber(number)
         val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
         val uri     = Uri.fromParts("tel", clean, null)
-        val extras  = Bundle().apply {
-            putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, MigApp.getPhoneAccountHandle(requireContext()))
-        }
+        val simAccounts = try { telecom.callCapablePhoneAccounts } catch (e: Exception) { emptyList() }
+        val extras = Bundle()
+        if (simAccounts.isNotEmpty()) extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simAccounts[0])
         try {
             telecom.placeCall(uri, extras)
         } catch (e: SecurityException) {

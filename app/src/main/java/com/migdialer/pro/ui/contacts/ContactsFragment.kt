@@ -11,7 +11,6 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.migdialer.pro.MigApp
 import com.migdialer.pro.databinding.FragmentContactsBinding
 import com.migdialer.pro.utils.PhoneUtils
 
@@ -32,27 +31,22 @@ class ContactsFragment : Fragment() {
         adapter = ContactsAdapter { number -> placeCall(number) }
         binding.rvContacts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvContacts.adapter = adapter
-        binding.etSearch.doAfterTextChanged { text ->
-            viewModel.search(text?.toString() ?: "")
-        }
+        binding.etSearch.doAfterTextChanged { text -> viewModel.search(text?.toString() ?: "") }
         viewModel.contacts.observe(viewLifecycleOwner) { contacts ->
             adapter.submitList(contacts)
             binding.emptyState.visibility = if (contacts.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.search(binding.etSearch.text?.toString() ?: "")
-    }
+    override fun onResume() { super.onResume(); viewModel.search(binding.etSearch.text?.toString() ?: "") }
 
     private fun placeCall(number: String) {
         val clean   = PhoneUtils.cleanNumber(number)
         val telecom = requireContext().getSystemService(TelecomManager::class.java) ?: return
         val uri     = Uri.fromParts("tel", clean, null)
-        val extras  = Bundle().apply {
-            putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, MigApp.getPhoneAccountHandle(requireContext()))
-        }
+        val simAccounts = try { telecom.callCapablePhoneAccounts } catch (e: Exception) { emptyList() }
+        val extras = Bundle()
+        if (simAccounts.isNotEmpty()) extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, simAccounts[0])
         try {
             telecom.placeCall(uri, extras)
         } catch (e: SecurityException) {
