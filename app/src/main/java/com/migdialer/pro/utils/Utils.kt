@@ -44,7 +44,9 @@ object PermissionUtils {
         Manifest.permission.CALL_PHONE,
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.READ_CALL_LOG,
-        Manifest.permission.READ_PHONE_STATE
+        Manifest.permission.WRITE_CALL_LOG,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.READ_PHONE_NUMBERS
     )
 
     fun hasAll(context: Context) = REQUIRED.all {
