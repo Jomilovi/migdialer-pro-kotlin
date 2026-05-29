@@ -31,12 +31,7 @@ class MigApp : Application() {
 
         telecom.registerPhoneAccount(account)
 
-        // Habilitar la cuenta si no está habilitada
-        if (!telecom.enabledPhoneAccounts.contains(handle)) {
-            try {
-                telecom.enabledPhoneAccounts  // Solo para verificar
-            } catch (e: Exception) { /* Continuar */ }
-        }
+
     }
 
     companion object {
